@@ -1,77 +1,125 @@
 package com.csc480.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class DataDetail implements EntryPoint {
+public class DataDetail {
 
-    @Override
-    public void onModuleLoad() {
-	//Sample data
-	// Column names
-	ArrayList<String> sampleChoices = new ArrayList<String>();
-	sampleChoices.add("Column 1");
-	sampleChoices.add("Column 2");
-	sampleChoices.add("Column 3");
-	sampleChoices.add("Column 4");
-	sampleChoices.add("Column 5");
-	// Data
-	ArrayList<Integer> sampleData = new ArrayList<Integer>();
-	for (int x = 0; x < 10; x++) {
-	    sampleData.add(x);
+	List<Selection> selections = new ArrayList<Selection>();
+
+	// Widgets
+	HorizontalPanel panel;
+	CellTable<Selection> ctSelector;
+	CellTable<String> ctData;
+
+	// Sample data
+	private static final String[] SAMPLE_COLS = { "Column 1", "Column 2",
+			"Column 3", "Column 4", "Column 5" };
+	private static final String[] SAMPLE_DATA = { "Data point A",
+			"Data point B", "Data point C", "Data point D", "Data point E",
+			"Data point F", "Data point G", "Data point H", "Datapoint I" };
+
+	public void onModuleLoad() {
+
+		initPanel();
+		initSelector();
+		initDataTable();
+		
+		// Create selections and add them to selector table
+		for (String s : SAMPLE_COLS)
+			selections.add(createSelection(s));
+		ctSelector.setRowData(selections);
+		
+		// Set data for data table
+		ctData.setRowData(0, Arrays.asList(SAMPLE_DATA));
 	}
-	// Columns
-	//Column<YerValueObject, String> newCol = new Column<YerValueObject, String>
-//	Column[] sampleColumns = new Column[sampleChoices.size()];
-//	for (int i=0; i<sampleChoices.size(); i++) {
-//	    ColumnItem colItem = new ColumnItem();
-//	   // Column<sampleChoices[], String> newCol = new Column<YerValueObject, String>
-//	}
 	
-	RootPanel rootPanel = RootPanel.get();
-	CellTable<String> cellTable = new CellTable<String>();
-	rootPanel.add(cellTable, 111, 10);
-	cellTable.setSize("329px", "280px");
-	
-	ListBox listBox = new ListBox();
-	for (String col : sampleChoices) {
-	    listBox.addItem(col);
+	private void initPanel() {
+		panel = new HorizontalPanel();
+		panel.setSize("100%", "100%");
+		panel.setSpacing(10);
+		panel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
+		panel.getElement().setId("dataViewPanel");
+		RootPanel.get().addStyleName("darkBG");
+		RootPanel.get().add(panel);
 	}
-	listBox.addClickHandler(new ClickHandler() {
-		public void onClick(ClickEvent event) {
-//		    Column col = new Column<String, String>();
-//		    String selection = (String) event.getSource();
-//		    cellTable.addColumn(col);
+
+	private void initSelector() {
+		ctSelector = new CellTable<Selection>();
+		ctSelector.setSize("100%", "auto");
+		
+		// Set up column
+		Column<Selection, String> col = new Column<Selection, String>(
+				new ButtonCell()) {
+			@Override
+			public String getValue(Selection object) {
+				return object.toString();
+			}
+		};
+		col.setFieldUpdater(new FieldUpdater<Selection, String>() {
+			@Override
+			public void update(int index, Selection object, String value) {
+				int colIndex = ctData.getColumnIndex(object.getColumn());
+				if(colIndex == -1)
+					ctData.addColumn(object.getColumn(), object.toString());
+				else
+					ctData.removeColumn(colIndex);
+			}
+		});
+		ctSelector.addColumn(col);
+
+		ctSelector.getElement().setId("selectorTable");
+		VerticalPanel selectorPanel = new VerticalPanel();
+		selectorPanel.setSize("200px", "100%");
+		selectorPanel.getElement().setId("selectorPanel");
+		selectorPanel.add(ctSelector);
+		panel.add(selectorPanel);
+		panel.setCellWidth(selectorPanel, "200px");
+	}
+	
+	private void initDataTable() {
+		ctData = new CellTable<String>();
+		ctData.setSize("100%", Window.getClientHeight()-40 + "px");
+		ctData.getElement().setId("dataTable");
+		panel.add(ctData);
+	}
+
+	private Selection createSelection(String name) {
+		TextColumn<String> col = new TextColumn<String>() {
+			@Override
+			public String getValue(String object) {
+				return object;
+			}
+		};
+		return new Selection(name, col);
+	}
+
+	class Selection {
+		private TextColumn<String> col;
+		private String name;
+
+		public Selection(String name, TextColumn<String> col) {
+			this.name = name;
+			this.col = col;
 		}
-	});
-	rootPanel.add(listBox, 10, 10);
-	listBox.setSize("91px", "276px");
-	listBox.setVisibleItemCount(5);
-	//Populate toggle button column
-    }
-    
-//    class ColumnItem {
-//	private Column col;
-//	private String name;
-//	
-//	public columnItem(String name, Column col) {
-//	    this.name = name;
-//	    this.col = col;
-//	}
-//	
-//	public Column getColumn() {
-//	    return col;
-//	}
-//	
-//	public String toString() {
-//	    return name;
-//	}
-//    }
+
+		public TextColumn<String> getColumn() {
+			return col;
+		}
+
+		public String toString() {
+			return name;
+		}
+	}
 }
