@@ -34,6 +34,13 @@ h1 {
 }
 
 .darkBG { background: #595757; }
+.yellowBG { background: #fff2a9; }
+.greenBG { background: #a8f3a0; }
+.blueBG { background: #a9dcff; }
+
+#haveDataNeedDataPanel {
+	margin: 0 auto 0 auto;
+}
 
 #dataViewPanel {
 /* 	background: #595757; */

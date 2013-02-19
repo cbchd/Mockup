@@ -1,8 +1,11 @@
 package com.csc480.client;
 
+import com.google.gwt.dev.jjs.impl.gflow.cfg.CfgEndNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class HaveDataNeedData {
@@ -12,6 +15,13 @@ public class HaveDataNeedData {
 	//RootPanel rootPan = RootPanel.get();
 	rootPanel = Mockup.rootPanel;
 	
+	HorizontalPanel panel = new HorizontalPanel();
+	panel.setHeight(Window.getClientHeight()-40 + "px");
+	panel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+	panel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+	panel.setSpacing(20);
+	panel.getElement().setId("haveDataNeedDataPanel");
+	
 	Button btnHaveData = new Button("Have Data");
 	btnHaveData.addClickHandler(new ClickHandler() {
 		public void onClick(ClickEvent event) {
@@ -19,7 +29,7 @@ public class HaveDataNeedData {
 		    Mockup.controller("PreDisplay");
 		}
 	});
-	rootPanel.add(btnHaveData, 10, 10);
+	panel.add(btnHaveData);
 	btnHaveData.setSize("212px", "280px");
 	
 	Button btnNeedData = new Button("Need Data");
@@ -27,9 +37,10 @@ public class HaveDataNeedData {
 		public void onClick(ClickEvent event) {
 		}
 	});
-	rootPanel.add(btnNeedData, 228, 10);
+	panel.add(btnNeedData);
 	btnNeedData.setSize("212px", "280px");
-	// TODO Auto-generated method stub
+	
+	rootPanel.add(panel);
 	
     }
 }
